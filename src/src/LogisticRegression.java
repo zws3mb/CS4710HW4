@@ -8,22 +8,31 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
+import Jama.*;
 
 
 
 public class LogisticRegression extends Classifier {
 	public ArrayList<HashMap<String,Double>> lex;
-	
+	public int m;
+	public Matrix theta;
+	public Matrix records;
 	public LogisticRegression(String namesFilepath) {
 		super(namesFilepath);
 		lex = new ArrayList<HashMap<String,Double>>();
 		try {
 			createLexicon(readNames(namesFilepath));
+			m= lex.size()-1;
+			theta = new Matrix(m,1);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// TODO Auto-generated constructor stub
+	}
+	private double sigmoid(Matrix x){
+		return 1/(1+Math.pow(Math.E,(double)-1*theta.transpose().times(x).get(0, 0)));
+		
 	}
 	private void createLexicon(ArrayList<ArrayList<String>> names){
 		System.out.println(names);
@@ -41,7 +50,7 @@ public class LogisticRegression extends Classifier {
 		lex.remove(0);
 		lex.add(temp);
 		
-		System.out.println(lex);
+//		System.out.println(lex);
 	}
 	private ArrayList readNames(String filepath) throws IOException {
         ArrayList<ArrayList<String>> meta= new ArrayList<ArrayList<String>>();
@@ -111,10 +120,23 @@ public class LogisticRegression extends Classifier {
 	public void train(String trainingDataFilepath) {
 		// TODO Auto-generated method stub
 		try {
+			ArrayList<ArrayList<Double>> numData = new ArrayList<ArrayList<Double>>();
 			ArrayList<ArrayList<String>> data =readInput(trainingDataFilepath);
 			for(ArrayList<String> row : data){
-				System.out.println(translator(row));
+				numData.add(translator(row));
 			}
+			
+			double[][] array = new double[numData.size()][];
+			for (int i = 0; i < numData.size(); i++) {
+			    ArrayList<Double> row = numData.get(i);
+			    double[] temp = new double[row.size()];
+			    for (int j=0;j<row.size();j++)
+			    	temp[j]=(double)row.get(j);
+			    array[i] = temp;
+			}
+			records = new Matrix(array);
+//			records.print(14, 2);
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
