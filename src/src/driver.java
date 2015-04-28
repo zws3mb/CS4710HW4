@@ -6,6 +6,7 @@ public class driver {
 		// TODO Auto-generated method stub
 		LogisticRegression log1 = new LogisticRegression("C:\\Users\\Zachary\\Desktop\\hw4_MachineLearning\\CS4710_HW4\\src\\trainingData\\census.names");
 		log1.train("C:\\Users\\Zachary\\Desktop\\hw4_MachineLearning\\CS4710_HW4\\src\\trainingData\\census.train");
+		log1.makePredictions("C:\\Users\\Zachary\\Desktop\\hw4_MachineLearning\\CS4710_HW4\\src\\trainingData\\census.train");
 	}
 
 }
