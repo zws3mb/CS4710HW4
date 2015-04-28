@@ -15,20 +15,20 @@ import Jama.*;
 
 
 public class LogReg2 extends Classifier {
-	public HashMap<String,Double> lex;
+//	public HashMap<String,Double> lex;
 	public ArrayList<String> order;
 	public int m;
 	public Matrix theta;
 	public Matrix records;
-	public double alpha=1;
+	public double alpha=.00001;
 	public LogReg2(String namesFilepath) {
 		super(namesFilepath);
-		lex = new HashMap<String,Double>();
+//		lex = new HashMap<String,Double>();
 		order = new ArrayList<String>();
 		try {
 			createLexicon(readNames(namesFilepath));
 			System.out.println(order);
-			m= lex.size()-1;
+			m= order.size()-1;
 			theta = new Matrix(m,1,1);
 			System.out.println(m);
 		} catch (IOException e) {
@@ -71,23 +71,23 @@ public class LogReg2 extends Classifier {
 	private void createLexicon(ArrayList<ArrayList<String>> names){
 //		System.out.println(names);
 		order.add("CONSTANT");
-		lex.put("1",1.0);
+//		lex.put("1",1.0);
 		for(ArrayList<String> row : names){
 			if(row.size() >2){
 				for(int i=1; i<row.size();i++){
-					lex.put(row.get(i), 1.0);
+//					lex.put(row.get(i), 1.0);
 					order.add(row.get(i));
 				}			
 			}
 			else
 			{
-				lex.put(row.get(0),0.0);
+//				lex.put(row.get(0),0.0);
 				order.add("CONTINUOUS");
 			}
 			}
 		String temp= order.get(1);
 		order.remove(1);
-		order.add(">50K");
+		order.add("<=50K");
 //			System.out.println(lex);
 	}
 	private ArrayList readNames(String filepath) throws IOException {
@@ -142,7 +142,7 @@ public class LogReg2 extends Classifier {
 	}
 	private ArrayList translator(ArrayList<String> dataRow){
 		ArrayList<Double> numRow = new ArrayList<Double>();
-		Set<String> workaround =lex.keySet();
+//		Set<String> workaround =lex.keySet();
 		int index =0;
 		for(int i=0;i<order.size();i++){
 			boolean added=false;
@@ -159,7 +159,10 @@ public class LogReg2 extends Classifier {
 			{
 				if((order.get(i)).equals("CONTINUOUS")){
 					try{
-						numRow.add(Double.parseDouble(dataRow.get(index)));
+						double val =Double.parseDouble(dataRow.get(index));
+						if(val>100)
+							val=val/100;
+						numRow.add(val);
 						index++;
 					}
 					catch(NumberFormatException e){
@@ -206,7 +209,7 @@ public class LogReg2 extends Classifier {
 			float[] adj = new float[theta.getRowDimension()];
 			double thresh=1;
 			int itercount=0;
-			while(thresh>.001 && itercount<100){
+			while(thresh>-.001 && itercount<50){
 			System.out.println("Iteration: "+itercount);
 			int[] targetvals = new int[m];
 			for(int y=0;y<m;y++)
@@ -234,9 +237,10 @@ public class LogReg2 extends Classifier {
 				tempsum+=val;
 			}
 			thresh=tempsum/adj.length;
+			System.out.print(thresh);
 //			theta.print(14, 2);
 			itercount++;
-			alpha=alpha*(1/((itercount+1)/2));
+//			alpha=alpha*(1/((itercount+1)/2));
 		}
 //			theta.print(1, 4);
 		} catch (IOException e) {
@@ -266,7 +270,7 @@ public class LogReg2 extends Classifier {
 			Matrix testdata = new Matrix(array);
 			int correct=0;
 			int[] targetvals = new int[m];
-			for(int y=0;y<m;y++)
+			for(int y=0;y<m-1;y++)
 				targetvals[y]=y;
 			for(int r=0;r<testdata.getRowDimension();r++){
 				Matrix singlerow = testdata.getMatrix(new int[]{r},targetvals);
@@ -276,14 +280,14 @@ public class LogReg2 extends Classifier {
 					guess=0.0;
 				else
 					guess=1.0;
-				boolean result = (guess==testdata.get(r,14));
+				boolean result = (guess==testdata.get(r,testdata.getColumnDimension()-1));
 				if(result)
 					correct++;
-				System.out.println(pred+" "+guess+" "+(result));
+//				System.out.println(pred+" "+guess+" "+(result));
 			}
 			System.out.println("Correct "+correct+" Out of:"+testdata.getRowDimension());
 			System.out.println((double)correct/testdata.getRowDimension());
-			theta.print(14, 2);
+//			theta.print(14, 2);
 //				System.out.println(sigmoid(singlerow.transpose()));
 			
 	}
