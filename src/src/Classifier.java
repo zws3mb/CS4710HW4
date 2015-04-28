@@ -1,5 +1,7 @@
 package src;
 
+import java.io.FileNotFoundException;
+
 /**
 * An abstract classifier class. Any classifier should be initialized using the .names file
 * then, should train on a training set and lastly can make predictions on a new test set.
@@ -20,7 +22,8 @@ public abstract class Classifier{
 	/**
 	* Makes predictions on new test data given at 'testDataFilepath'. Should print predictions to
 	* standard output, one classification per line. Nothing else should be printed to standard output
+	 * @throws FileNotFoundException 
 	*/
-	public abstract void makePredictions(String testDataFilepath);
+	public abstract void makePredictions(String testDataFilepath) throws FileNotFoundException;
 
 }

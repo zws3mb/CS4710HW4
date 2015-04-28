@@ -294,7 +294,7 @@ public class LogReg2 extends Classifier {
 				boolean result = (guess==testdata.get(r,testdata.getColumnDimension()-1));
 				if(result)
 					correct++;
-				System.out.println(pred+" "+guess+" "+(result));
+//				System.out.println(pred+" "+guess+" "+(result));
 			}
 			System.out.println("Correct "+correct+" Out of:"+testdata.getRowDimension());
 			System.out.println((double)correct/testdata.getRowDimension());
