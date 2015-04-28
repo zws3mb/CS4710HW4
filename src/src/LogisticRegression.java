@@ -24,8 +24,8 @@ public class LogisticRegression extends Classifier {
 		try {
 			createLexicon(readNames(namesFilepath));
 			m= lex.size()-1;
-			theta = new Matrix(m,1,1);
-			System.out.println(m);
+			theta = new Matrix(m,1,.5);
+//			System.out.println(m);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -36,7 +36,7 @@ public class LogisticRegression extends Classifier {
 //		x.print(x.getRowDimension(), 2);
 		double val= 1/(1+Math.pow(Math.E,(double)-1*((theta.transpose().times(x)).get(0, 0))));
 		if (Double.isNaN(val)){
-			System.out.print("NaNXXXXXXXXXXXXXXXXXXXXXXX");
+//			System.out.print("NaNXXXXXXXXXXXXXXXXXXXXXXX");
 			theta.transpose().print(1,2);
 			x.print(1, 2);
 //			System.out.println((theta.transpose().times(x)).getRowDimension()+" "+(theta.transpose().times(x)).getColumnDimension());
@@ -53,10 +53,10 @@ public class LogisticRegression extends Classifier {
 			h0=.99999;
 		double val= -y*Math.log(h0)-(1-y)*Math.log(1-h0);
 //		System.out.println("COST FUNC"+h0+" "+y+" "+val);
-		if(val<0)
-			System.out.println("Negative");
+//		if(val<0)
+//			System.out.println("Negative");
 		if(Double.isInfinite(val) || Double.isNaN(val)){
-			System.out.println("FUCKED UP");
+//			System.out.println("FUCKED UP");
 			return .99;
 		}
 
@@ -167,12 +167,13 @@ public class LogisticRegression extends Classifier {
 			    array[i] = temp;
 			}
 			records = new Matrix(array);
-			System.out.println(records.getRowDimension()+" "+records.getColumnDimension());
+//			System.out.println(records.getRowDimension()+" "+records.getColumnDimension());
 			float[] adj = new float[theta.getRowDimension()];
 			double thresh=1;
 			int itercount=0;
-			while(thresh>.001 && itercount<10){
-			System.out.println("Iteration: "+itercount);
+			double lastmarg=alpha;
+			while(thresh>-1 && itercount<10){
+//			System.out.println("Iteration: "+itercount);
 			for(int j=0;j<theta.getRowDimension();j++){
 				float itercost=0;
 				for(int r=0;r<records.getRowDimension();r++){
@@ -183,7 +184,7 @@ public class LogisticRegression extends Classifier {
 
 				}
 //				System.out.println(itercost);
-				adj[j]=(float) ((float) (alpha*((float) 1)/records.getRowDimension())*itercost);
+				adj[j]=(float) ((float) ((float) (alpha*((float) 1)/records.getRowDimension())*itercost)+100/records.getRowDimension()*theta.norm1());
 				if(Float.isInfinite(adj[j])||Float.isNaN(adj[j]))
 					System.out.println(Float.isInfinite(adj[j])+" "+Float.isNaN(adj[j])+"a:"+alpha+" itercost:"+itercost);
 			}
@@ -197,6 +198,12 @@ public class LogisticRegression extends Classifier {
 			}
 			thresh=tempsum/adj.length;
 //			theta.print(14, 2);
+			if(lastmarg>thresh){
+				alpha+=.1;	
+				}
+				else
+					alpha*=.5;
+				lastmarg=thresh;
 			itercount++;
 		}
 //			theta.print(1, 4);
@@ -237,11 +244,11 @@ public class LogisticRegression extends Classifier {
 				boolean result = (guess==testdata.get(r,14));
 				if(result)
 					correct++;
-				System.out.println(pred+" "+guess+" "+(result));
+//				System.out.println(pred+" "+guess+" "+(result));
 			}
 			System.out.println("Correct "+correct+" Out of:"+testdata.getRowDimension());
 			System.out.println((double)correct/testdata.getRowDimension());
-			theta.print(14, 2);
+//			theta.print(14, 2);
 //				System.out.println(sigmoid(singlerow.transpose()));
 			
 	}

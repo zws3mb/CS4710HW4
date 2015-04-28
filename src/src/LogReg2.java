@@ -21,17 +21,19 @@ public class LogReg2 extends Classifier {
 	public Matrix theta;
 	public Matrix records;
 	public double alpha=1;
-	public double lambda=1;
+	public double lambda=0.001;
 	public LogReg2(String namesFilepath) {
 		super(namesFilepath);
 //		lex = new HashMap<String,Double>();
 		order = new ArrayList<String>();
 		try {
 			createLexicon(readNames(namesFilepath));
-			System.out.println(order);
+//			System.out.println(order);
 			m= order.size()-1;
-			theta = new Matrix(m,1,Math.random());
-			System.out.println(m);
+			double seed =0.5;//Math.random();
+//			System.out.println(seed);
+			theta = new Matrix(m,1,seed);
+//			System.out.println(m);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -42,9 +44,9 @@ public class LogReg2 extends Classifier {
 //		x.print(x.getRowDimension(), 2);
 		double val= 1/(1+Math.pow(Math.E,(double)-1*((theta.transpose().times(x)).get(0, 0))));
 		if (Double.isNaN(val)){
-			System.out.print("NaNXXXXXXXXXXXXXXXXXXXXXXX");
-			theta.transpose().print(1,2);
-			x.print(1, 2);
+//			System.out.print("NaNXXXXXXXXXXXXXXXXXXXXXXX");
+//			theta.transpose().print(1,2);
+//			x.print(1, 2);
 //			System.out.println((theta.transpose().times(x)).getRowDimension()+" "+(theta.transpose().times(x)).getColumnDimension());
 		}
 		return val;
@@ -59,10 +61,10 @@ public class LogReg2 extends Classifier {
 			h0=.99999;
 		double val= -y*Math.log(h0)-(1-y)*Math.log(1-h0);
 //		System.out.println("COST FUNC"+h0+" "+y+" "+val);
-		if(val<0)
-			System.out.println("Negative");
+//		if(val<0)
+//			System.out.println("Negative");
 		if(Double.isInfinite(val) || Double.isNaN(val)){
-			System.out.println("FUCKED UP");
+//			System.out.println("F");
 			return .99;
 		}
 
@@ -192,7 +194,7 @@ public class LogReg2 extends Classifier {
 		// TODO Auto-generated method stub
 		try {
 			ArrayList<ArrayList<Double>> numData = new ArrayList<ArrayList<Double>>();
-			ArrayList<ArrayList<String>> data =readInput(trainingDataFilepath,500);
+			ArrayList<ArrayList<String>> data =readInput(trainingDataFilepath,Integer.MAX_VALUE);
 			for(ArrayList<String> row : data){
 				numData.add(translator(row));
 			}
@@ -206,13 +208,13 @@ public class LogReg2 extends Classifier {
 			    array[i] = temp;
 			}
 			records = new Matrix(array);
-			System.out.println(records.getRowDimension()+" "+records.getColumnDimension());
+//			System.out.println(records.getRowDimension()+" "+records.getColumnDimension());
 			float[] adj = new float[theta.getRowDimension()];
 			double thresh=1;
 			int itercount=0;
 			double lastmarg=alpha;
 			while(thresh>-1 && itercount<10){
-			System.out.println("Iteration: "+itercount);
+//			System.out.println("Iteration: "+itercount);
 			int[] targetvals = new int[m];
 			for(int y=0;y<m;y++)
 				targetvals[y]=y;
@@ -227,7 +229,7 @@ public class LogReg2 extends Classifier {
 
 				}
 //				System.out.print("Cost: "+alpha*itercost/records.getRowDimension());
-				adj[j]=(float) ((float) ((alpha/records.getRowDimension())*itercost)+lambda/records.getRowDimension()*theta.get(j, 0));
+				adj[j]=(float) ((float) ((alpha/records.getRowDimension())*itercost)+lambda/records.getRowDimension()*theta.norm1());
 				if(Float.isInfinite(adj[j])||Float.isNaN(adj[j]))
 					System.out.println(Float.isInfinite(adj[j])+" "+Float.isNaN(adj[j])+"a:"+alpha+" itercost:"+itercost);
 			}
@@ -287,17 +289,21 @@ public class LogReg2 extends Classifier {
 				Matrix singlerow = testdata.getMatrix(new int[]{r},targetvals);
 				double pred=sigmoid(singlerow.transpose());
 				double guess=0.0;
-				if(pred<0.5)
+				if(pred<0.5){
 					guess=0.0;
-				else
+					System.out.println(">50K");
+				}
+				else{
 					guess=1.0;
+					System.out.println("<=50K");
+				}
 				boolean result = (guess==testdata.get(r,testdata.getColumnDimension()-1));
 				if(result)
 					correct++;
 //				System.out.println(pred+" "+guess+" "+(result));
 			}
-			System.out.println("Correct "+correct+" Out of:"+testdata.getRowDimension());
-			System.out.println((double)correct/testdata.getRowDimension());
+//			System.out.println("Correct "+correct+" Out of:"+testdata.getRowDimension());
+//			System.out.println((double)correct/testdata.getRowDimension());
 //			theta.print(14, 2);
 //				System.out.println(sigmoid(singlerow.transpose()));
 			
