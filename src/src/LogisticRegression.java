@@ -179,7 +179,7 @@ public class LogisticRegression extends Classifier {
 				Matrix singlerow = records.getMatrix(new int[]{r},new int[]{0,1,2,3,4,5,6,7,8,9,10,11,12,13});
 				//			System.out.println(sigmoid(singlerow.transpose()));
 //				System.out.println(sigmoid(singlerow.transpose()));
-				itercost+=cost(sigmoid(singlerow.transpose()),records.get(r, 14))*records.get(r,j);
+				itercost+=(sigmoid(singlerow.transpose())-records.get(r, records.getColumnDimension()-1))*records.get(r,j);
 
 				}
 //				System.out.println(itercost);

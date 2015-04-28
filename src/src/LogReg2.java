@@ -20,7 +20,8 @@ public class LogReg2 extends Classifier {
 	public int m;
 	public Matrix theta;
 	public Matrix records;
-	public double alpha=.00001;
+	public double alpha=1;
+	public double lambda=1;
 	public LogReg2(String namesFilepath) {
 		super(namesFilepath);
 //		lex = new HashMap<String,Double>();
@@ -29,7 +30,7 @@ public class LogReg2 extends Classifier {
 			createLexicon(readNames(namesFilepath));
 			System.out.println(order);
 			m= order.size()-1;
-			theta = new Matrix(m,1,1);
+			theta = new Matrix(m,1,Math.random());
 			System.out.println(m);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -161,7 +162,7 @@ public class LogReg2 extends Classifier {
 					try{
 						double val =Double.parseDouble(dataRow.get(index));
 						if(val>100)
-							val=val/100;
+							val=100;
 						numRow.add(val);
 						index++;
 					}
@@ -209,37 +210,47 @@ public class LogReg2 extends Classifier {
 			float[] adj = new float[theta.getRowDimension()];
 			double thresh=1;
 			int itercount=0;
-			while(thresh>-.001 && itercount<50){
+			double lastmarg=alpha;
+			while(thresh>-1 && itercount<10){
 			System.out.println("Iteration: "+itercount);
 			int[] targetvals = new int[m];
 			for(int y=0;y<m;y++)
 				targetvals[y]=y;
+
 			for(int j=0;j<theta.getRowDimension();j++){
 				float itercost=0;
 				for(int r=0;r<records.getRowDimension();r++){
 				Matrix singlerow = records.getMatrix(new int[]{r},targetvals);
 				//			System.out.println(sigmoid(singlerow.transpose()));
 //				System.out.println(sigmoid(singlerow.transpose()));
-				itercost+=cost(sigmoid(singlerow.transpose()),records.get(r, 14))*records.get(r,j);
+				itercost+=(sigmoid(singlerow.transpose())-records.get(r, records.getColumnDimension()-1))*records.get(r,j);
 
 				}
-//				System.out.println(itercost);
-				adj[j]=(float) ((float) (alpha*((float) 1)/records.getRowDimension())*itercost);
+//				System.out.print("Cost: "+alpha*itercost/records.getRowDimension());
+				adj[j]=(float) ((float) ((alpha/records.getRowDimension())*itercost)+lambda/records.getRowDimension()*theta.get(j, 0));
 				if(Float.isInfinite(adj[j])||Float.isNaN(adj[j]))
 					System.out.println(Float.isInfinite(adj[j])+" "+Float.isNaN(adj[j])+"a:"+alpha+" itercost:"+itercost);
 			}
-			
-			for(int q=0;q<theta.getRowDimension(); q++)
+//			System.out.print("Theta:");
+			for(int q=0;q<theta.getRowDimension(); q++){
 				theta.set(q, 0, (theta.get(q, 0)-adj[q]));
+//				System.out.print(theta.get(q,0)+" ");
+			}
 			
 			double tempsum=0;
 			for (double val : adj){
 				tempsum+=val;
 			}
 			thresh=tempsum/adj.length;
-			System.out.print(thresh);
 //			theta.print(14, 2);
 			itercount++;
+//			System.out.println(alpha+" "+thresh);
+			if(lastmarg>thresh){
+			alpha+=.1;	
+			}
+			else
+				alpha*=.5;
+			lastmarg=thresh;
 //			alpha=alpha*(1/((itercount+1)/2));
 		}
 //			theta.print(1, 4);
@@ -283,7 +294,7 @@ public class LogReg2 extends Classifier {
 				boolean result = (guess==testdata.get(r,testdata.getColumnDimension()-1));
 				if(result)
 					correct++;
-//				System.out.println(pred+" "+guess+" "+(result));
+				System.out.println(pred+" "+guess+" "+(result));
 			}
 			System.out.println("Correct "+correct+" Out of:"+testdata.getRowDimension());
 			System.out.println((double)correct/testdata.getRowDimension());
