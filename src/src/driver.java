@@ -4,9 +4,9 @@ public class driver {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		LogReg2 log1 = new LogReg2("C:\\Users\\Zachary\\Desktop\\Spring 2015\\CS4710_HW4\\src\\trainingData\\census.names");
-		log1.train("C:\\Users\\Zachary\\Desktop\\Spring 2015\\CS4710_HW4\\src\\trainingData\\census.train");
-		log1.makePredictions("C:\\Users\\Zachary\\Desktop\\Spring 2015\\CS4710_HW4\\src\\trainingData\\census.test");
+		LogReg2 log1 = new LogReg2("trainingData\\census.names");
+		log1.train("trainingData\\census.train");
+		log1.makePredictions("trainingData\\census.test");
 ////		Simpleton simp = new Simpleton("C:\\Users\\Zachary\\Desktop\\Spring 2015\\CS4710_HW4\\src\\trainingData\\census.names");
 //		simp.makePredictions("C:\\Users\\Zachary\\Desktop\\Spring 2015\\CS4710_HW4\\src\\trainingData\\census.train");
 //		LogisticRegression log2 = new LogisticRegression("C:\\Users\\Zachary\\Desktop\\Spring 2015\\CS4710_HW4\\src\\trainingData\\census.names");
